@@ -23,9 +23,9 @@ class LinkController extends Controller
         set_time_limit(0);
         ini_set('memory_limit', '128M');
         $url = array();
-        $file = fopen(public_path('et.txt'),"w");
-        for ($i = 68; $i <= 1000; $i++) {
-            $url[$i - 1] = "http://www.etzuqiu.com/forum-223-{$i}.html";
+        $file = fopen(public_path('manlian.txt'),"w");
+        for ($i = 300; $i <= 639; $i++) {
+            $url[$i - 1] = "http://www.etzuqiu.com/forum-270-{$i}.html";
         }
 //        $url = file(public_path('url.txt'));
 

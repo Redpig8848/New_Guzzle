@@ -23,23 +23,26 @@ class WenController extends Controller
         set_time_limit(0);
         ini_set('memory_limit', '128M');
         $url = array();
-//        $file = fopen(public_path('url.txt'),"r");
-        $urls = file(public_path('et.txt'));
-        dd($urls);
+        $file = fopen(public_path('manlian.txt'),"w");
+        for ($i = 1; $i <= 639; $i++) {
+            $url[$i - 1] = "http://www.etzuqiu.com/forum-270-{$i}.html";
+        }
+//        $url = file(public_path('url.txt'));
+
 //        dd($url);
         $this->totalPageCount = 1000;
         $client = new Client();
-        $requests = function ($total) use ($client, $urls) {
-            foreach ($urls as $item) {
+        $requests = function ($total) use ($client, $url) {
+            foreach ($url as $item) {
                 yield function () use ($item, $client) {
-                    return $client->get($item);
+                    return $client->getAsync($item);
                 };
             }
         };
 
         $pool = new Pool($client, $requests($this->totalPageCount), [
             'concurrency' => 5,
-            'fulfilled' => function ($response, $index)  {
+            'fulfilled' => function ($response, $index) use ($file) {
                 ob_flush();
                 flush();
                 $http = $response->getBody()->getContents();
@@ -49,11 +52,20 @@ class WenController extends Controller
                 } catch (\Exception $exception) {
                     $crawler->addHtmlContent(mb_convert_encoding($http, 'utf-8', 'gbk'));
                 }
-                dd(1);
-                $sub  = substr($http, strpos($http, 'postmessage_')+12);
-                $id = substr($sub,0,strpos($sub,'"'));
-                $data_a = $crawler->filterXPath('//*[@id="postmessage_'.$id.'"]')->text();
-                dd($data_a);
+                $arr = $crawler->filter('#threadlisttableid > tbody')->each(function ($node, $i) use ($http,$file) {
+                    if ($node->text() !== ""){
+                        try {
+                            $href = $node->filter('tr > th > a.s.xst')->attr('href');
+//                            $href = "http://www.hangxun100.com/".$href;
+                            echo $href."<br>";
+                            fwrite($file,$href.chr(10));
+                        }catch (\Exception $exception){
+                            echo "空，跳过"."<br>";
+                        }
+
+                    }
+                });
+
                 echo '<br>';
                 $this->countedAndCheckEnded();
             },
@@ -65,6 +77,7 @@ class WenController extends Controller
         $promise = $pool->promise();
         $promise->wait();
 
+        fclose($file);
     }
 
 
