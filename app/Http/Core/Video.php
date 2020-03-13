@@ -1,22 +1,68 @@
 <?php
 
+$options = array(
+    'ssl' => array(
+        'verify_peer' => false,
+        'verify_peer_name' => false
+    )
+);
 
-use Illuminate\Support\Facades\DB;
-echo "1".chr(10);
-$file = file("./zuqiu.txt");
-//print_r($file);
-echo "2".chr(10);
-$data['fid'] = 2;
-$data['posttableid'] = 0;
-$data['typeid'] = 0;
-$data['sortid'] = 0;
-$data['readperm'] = 0;
-$data['price'] = 0;
-$data['author'] = '视频版主';
-$data['authorid'] = 2;
-$data['tid'] = 1;
-$data['subject'] = "demo";
-//$html  = file_get_contents(trim($file[0]));
-$html  = file_get_contents("http://www.hangxun100.com/thread-1711-1-164.html");
-preg_match('', $html);
-print $html;
+
+$html  = file_get_contents("https://www.huanhuba.com/info/140809.html",false,
+    stream_context_create($options));
+
+$txt = substr($html,strpos($html,'<div class="inteldesc">')+23);
+$txt = substr($txt,0,strpos($txt,'本场比赛前瞻由欢呼吧足球AI智能编辑系统发布。'));
+$txt = preg_replace('/<a .*?>/','',$txt);
+$txt = str_replace('</a>','',$txt);
+echo trim($txt);
+preg_match('/\d+-\d+-\d+ \d+:\d+:\d+/',$html,$times);
+
+print_r($times);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,6 +2,7 @@
 
 header('Content-type:text/html; charset=utf-8');
 function sina()
+
 {
     $html = file_get_contents('http://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2510&k=&num=300&page=1');
     preg_match_all("/\"url\":\"(.*?)\",/", $html, $urls);
